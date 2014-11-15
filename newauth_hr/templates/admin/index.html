@@ -1,0 +1,45 @@
+{% extends "admin/base.html" %}
+{% block title %}HR | {{ config.EVE.auth_name }}{% endblock %}
+{% block admin_content %}
+<div class="row">
+  <div class="col-md-12">
+    <h1>Human Resources</h1>
+    <hr>
+  </div>
+  <div class="col-md-12">
+    <div class="panel panel-turquoise">
+      <div class="panel-heading">
+        <h3 class="panel-title">Pending Applications</h3>
+      </div>
+      <div class="list-group">
+        {% for application in pending %}
+        <a class="list-group-item" href="{{ url_for('.AdminView:view_application', application_id=application.id) }}">
+          <strong>{{ application.character_name }}</strong> applied to <strong>{{ application.corporation.name }}</strong> <small>{{ application.created_at|humanize }}</small>
+        </a>
+        {% endfor %}
+        <a class="list-group-item" href="{{ url_for('.AdminView:applications') }}">View all applications</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12">
+    <div class="panel panel-turquoise">
+      <div class="panel-heading">
+        <h3 class="panel-title">Recent Activity</h3>
+      </div>
+      <div class="list-group">
+        {% for item in activity %}
+        {% if item.__class__.__name__ == 'Application' %}
+        <a class="list-group-item" href="{{ url_for('.AdminView:view_application', application_id=item.id) }}">
+          <strong>{{ item.handled_by.name }}</strong> {{ item.status|lower }} {{ item.character_name }}'s application <small>{{ item.handled_at|humanize }}</small>
+        </a>
+        {% else %}
+        <a class="list-group-item" href="{{ url_for('.AdminView:view_application', application_id=item.application.id) }}">
+          <strong>{{ item.created_by.name }}</strong> added a note to {{ item.application.character_name }}'s application <small>{{ item.created_at|humanize }}</small>
+        </a>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

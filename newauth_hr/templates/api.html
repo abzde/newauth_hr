@@ -1,0 +1,58 @@
+{% extends "_layouts/base.html" %}
+{% macro render_field(field, icon) %}
+<div class="form-group">
+  <label for="{{ field.id }}" class="col-sm-2 control-label">{{ field.label.text }}</label>
+  <div class="col-sm-10">
+    {% if icon -%}
+    <div class="input-group{% if field.errors %} has-error{% endif %}">
+      <span class="input-group-addon">
+        <i class="fa fa-{{ icon }}"></i>
+      </span>
+      {{ field(class_='form-control', placeholder=field.label.text) }}
+    </div>
+    {% else -%}
+      {{ field(class_='form-control', placeholder=field.label.text) }}
+    {%- endif %}
+    <ul>
+      {% for error in field.errors %}
+      <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endmacro %}
+{% block title %}Apply | {{ config.EVE.auth_name }}{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <h1>Apply to {{ config.EVE.auth_name }}</h1>
+    <hr>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+    <div class="panel panel-turquoise">
+      <div class="panel-heading">
+        <h3 class="panel-title">API Key</h3>
+      </div>
+      <div class="panel-body">
+        <p>For security reasons, we will ask and check for access to your mail, wallet transactions and other auditing data.</p>
+        <p>We will not share it with peers.</p>
+        <p>Please note that daily checks are in place and your access will be revoked if the system locates an incorrect API or at the discretion of the Alliance Leadership.</p>
+        <p class="text-center lead"><strong><a href="https://community.eveonline.com/support/api-key/CreatePredefined?accessMask={{ config.EVE.requirements.internal.mask }}">CLICK HERE TO GENERATE AN API, CHECK NO EXPIRY, NAME IT, TOUCH NOTHING ELSE AND HIT SUBMIT</a></strong></p>
+        <form action="" method="POST" class="form-horizontal" role="form">
+          {{ api_form.csrf_token }}
+          {{ render_field(api_form.key_id, "key") }}
+          {{ render_field(api_form.vcode, "lock") }}
+
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button class="btn btn-block btn-success" type="submit"><i class="fa fa-check"></i>Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

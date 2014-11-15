@@ -1,0 +1,18 @@
+{
+  "name": "newauth_hr",
+  "version": "0.0.0",
+  "authors": [
+    "abzde <abzde@abzde.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "tablesorter": "https://github.com/Mottie/tablesorter.git#v2.18.3"
+  }
+}

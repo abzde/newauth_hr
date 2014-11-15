@@ -1,0 +1,48 @@
+{% extends "admin/base.html" %}
+{% from "admin/report.html" import render_report %}
+{% block title %}User details for {{ user.name }} | {{ config.EVE.auth_name }}{% endblock %}
+{% block admin_content %}
+<div class="row">
+  <div class="col-md-12">
+    <h1>User Details <small>{{ user.name }}</small></h1>
+    <hr>
+  </div>
+  <div class="col-md-12">
+    {% if current_user.is_admin() %}
+    <div class="panel panel-turqiouse">
+      <div class="panel-heading">
+        <h3 class="panel-title">Report</h3>
+      </div>
+      <div class="panel-body">
+        <div class="btn-group btn-group-justified">
+          <a href="{{ url_for('.AdminView:generate_user_report', user_id=user.user_id) }}" class="btn btn-success">{% if report %}Regenerate{% else %}Generate report{% endif %}</a>
+          {% if report %}
+          <div class="btn-group" data-toggle="buttons-checkbox">
+            <button type="button" data-toggle="collapse" data-target="#report" class="btn btn-primary">View Report</button>
+          </div>
+          {% endif %}
+        </div>
+        {% if report %}
+        <div class="collapse" id="report">
+          {{ render_report(report) }}
+        </div>
+        {% else %}
+        No report exists yet.
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+    <div class="panel panel-turquoise">
+      <div class="panel-heading">
+        <h3 class="panel-title">Characters</h3>
+      </div>
+      <div class="list-group">
+        {% for character in user.characters %}
+        <div class="list-group-item">
+          {{ character.name }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

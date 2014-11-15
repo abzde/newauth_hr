@@ -1,0 +1,50 @@
+{% extends "admin/base.html" %}
+{% block title %}Applications | {{ config.EVE.auth_name }}{% endblock %}
+{% block admin_content %}
+<div class="row">
+  <div class="col-md-12">
+    <h1>Applications</h1>
+    <hr>
+  </div>
+  <div class="col-md-12">
+    <table class="tablesorter" id="applications">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Applied to</th>
+          <th>Applied on</th>
+          <th>Status</th>
+          <th class="sorter-false filter-false"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for application in applications %}
+        <tr>
+          <td>{{ application.character_name }}</td>
+          <td>{{ application.corporation.name }}</td>
+          <td data-timestamp="{{ application.created_on }}">{{ application.created_at|format_datetime }}</td>
+          <td>{{ application.status }}</td>
+          <td class="text-right"><a class="btn btn-primary btn-xs" href="{{ url_for('.AdminView:view_application', application_id=application.id) }}">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  $(document).ready(function() {
+    $.tablesorter.addParser({
+      id: 'timestamp',
+      is: function() { return false; },
+      format: function(s, table, cell, cellIndex) {
+        return $(cell).data('timestamp');
+      },
+      parsed: false,
+      type: 'numeric'
+    });
+    $("#applications").tablesorter({
+      headers: { 3: { sorter: 'timestamp' } }
+    });
+  });
+</script>
+{% endblock %}

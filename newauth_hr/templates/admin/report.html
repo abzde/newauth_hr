@@ -1,0 +1,199 @@
+{% macro pager(id, iterable) %}
+<div id="{{ id }}-pager">
+  <ul class="pagination">
+    <li class="page-first"><span class="fa fa-angle-double-left"></span></li>
+    <li class="page-prev"><span class="fa fa-angle-left"></span></li>
+    <li class="page-next"><span class="fa fa-angle-right"></span></li>
+    <li class="page-last"><span class="fa fa-angle-double-right"></span></li>
+  </ul>
+  <select class="form-control page-goto"></select>
+  <span class="page-display"></span>
+  <select class="page-size form-control">
+    <option value="10" selected>10</option>
+    {% for v in [25, 50, 100] %}
+    <option value="{{ v }}"{% if iterable|count < v %} disabled{% endif %}>{{ v }}</option>
+    {% endfor %}
+  </select>
+</div>
+<script>
+  $(document).ready(function() {
+    $("#{{ id }}").tablesorter({
+      widgetOptions: {
+        pager_selectors: {
+          container: "#{{ id }}-pager"
+        }
+      }
+    });
+  });
+</script>
+{% endmacro %}
+
+{% macro render_report(report) %}
+<ul class="nav nav-tabs" role="tablist">
+  {% for character in report.characters %}
+  <li role="presentation" class="text-center{% if loop.first %} active{% endif %}">
+    <a href="#character{{ loop.index }}" role="tab" data-toggle="tab">
+      <img src="https://image.eveonline.com/Character/{{ character.character_id }}_128.jpg"><br>
+      {{ character.character_name }}</a>
+  </li>
+  {% endfor %}
+</ul>
+<div class="tab-content">
+  {% for character in report.characters %}
+  <div role="tabpanel" class="tab-pane{% if loop.first %} active{% endif %}" id="character{{ loop.index }}">
+    <div class="panel panel-turquoise">
+      <div class="panel-heading">
+        <h3 class="panel-title">Basic Information</h3>
+      </div>
+      <div class="panel-body">
+        <dl class="dl-horizontal">
+          <dt>Name</dt>
+          <dd>{{ character.character_name }}</dd>
+          <dt>Corporation</dt>
+          <dd>{{ character.corporation_name }}</dd>
+          <dt>Alliance</dt>
+          <dd>{% if character.alliance_name %}{{ character.alliance_name }}{% else %}No alliance{% endif %}</dd>
+          <dt>Skill points</dt>
+          <dd>{{ "{:,}".format(character.skill_points) }}</dd>
+          <dt>Security status</dt>
+          <dd>{{ character.security_status|round(2) }}</dd>
+      </div>
+    </div>
+    <div class="panel panel-turquoise">
+      <div class="panel-heading">
+        <h3 class="panel-title">Employment History</h3>
+      </div>
+      {{ pager("history-{}".format(character.id), character.history) }}
+      <table id="history-{{ character.id }}">
+        <thead>
+          <tr>
+            <th class="sorter-false filter-false" style="width:32px;"></th>
+            <th class="sorter-false filter-false" style="width:32px;"></th>
+            <th>Corporation</th>
+            <th>Alliance</th>
+            <th>Start Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in character.history %}
+          <tr>
+            <td>
+              {% if entry.corporation.alliance_id -%}
+              <img src="https://image.eveonline.com/Alliance/{{ entry.corporation.alliance_id }}_32.png">
+              {%- endif %}
+            </td>
+            <td><img src="https://image.eveonline.com/Corporation/{{ entry.corporation.id }}_32.png"></td>
+            <td>{{ entry.corporation.name }}</td>
+            <td>{{ entry.corporation.alliance_name }}</td>
+            <td>{{ entry.start_date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="panel panel-turquoise">
+      <div class="panel-heading">
+        <h3 class="panel-title">Contacts</h3>
+      </div>
+      {{ pager("contacts-{}".format(character.id), character.contacts) }}
+      <table id="contacts-{{ character.id }}">
+        <thead>
+          <tr>
+            <th width="10%">Standing</th>
+            <th>Contact</th>
+          </tr>
+        </thead>
+        <tbody> 
+          {% for contact in character.contacts %}
+          <tr>
+            <td>
+              <span class="label-standing label{% if contact.standing == 0 %} label-default{% elif contact.standing > 0 %} label-primary{% elif contact.standing < 0 %} label-warning{% endif %}">{{ contact.standing }}</span>
+            </td>
+            <td>{{ contact.name }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="panel panel-turquoise">
+      <div class="panel-heading">
+        <h3 class="panel-title">Standings</h3>
+      </div>
+      {{ pager("standings-{}".format(character.id), character.standings) }}
+      <table id="standings-{{ character.id }}">
+        <thead>
+          <tr>
+            <th width="10%">Standing</th>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entity in character.standings %}
+          <tr>
+            <td>
+              <div class="label-standing label{% if entity.standing == 0 %} label-default{% elif entity.standing > 0 %} label-primary{% elif entity.standing < 0 %} label-warning{% endif %}">{{ entity.standing }}</div>
+            </td>
+            <td>{{ entity.name }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="panel panel-turquoise">
+      <div class="panel-heading">
+        <h3 class="panel-title">Wallet Journal</h3>
+      </div>
+      {{ pager("wallet-{}".format(character.id), character.wallet) }}
+      <table id="wallet-{{ character.id }}">
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Amount</th>
+            <th>Reason</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in character.wallet %}
+          <tr>
+            <td>{{ entry.from_name }}</td>
+            <td>{{ entry.to_name }}</td>
+            <td>{{ "{:,.2f}".format(entry.amount) }}</td>
+            <td>{{ entry.reason }}</td>
+            <td>{{ entry.date|format_datetime }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>    
+    <div class="panel panel-turquoise">
+      <div class="panel-heading">
+        <h3 class="panel-title">Assets</h3>
+      </div>
+      {{ pager("assets-{}".format(character.id), character.assets) }}
+      <table id="assets-{{ character.id }}">
+        <thead>
+          <th>Item</th>
+          <th>Group</th>
+          <th>Qty</th>
+          <th>Base Price</th>
+          <th>Location</th>
+        </thead>
+        <tbody>
+          {% for asset in character.assets %}
+          <tr>
+            <td>{{ asset.item_name }}</td>
+            <td>{{ asset.group_name }}</td>
+            <td>{{ "{:,}".format(asset.quantity) }}</td>
+            <td>{{ "{:,.2f}".format(asset.base_price) }}</td>
+            <td>{{ asset.location }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div >
+  {% endfor %}
+</div>
+{% endmacro %}

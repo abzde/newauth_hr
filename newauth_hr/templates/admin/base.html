@@ -1,0 +1,25 @@
+{% extends '_layouts/base.html' %}
+{% block js %}
+  {{ super() }}
+  {% assets "hr_js" %}
+  <script src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+  {% endblock %}
+{% block css %}
+  {{ super() }}
+  {% assets "hr_css" %}
+  <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
+{% endblock %}
+{% block content %}
+<div class="col-md-12">
+  <nav>
+    <ul class="nav nav-pills">
+      <li><a href="{{ url_for('.AdminView:index') }}">HR Home</a></li>
+      <li><a href="{{ url_for('.AdminView:applications') }}">Applications</a></li>
+      <li><a href="{{ url_for('.AdminView:users') }}">Users</a></li>
+    </ul>
+  </nav>
+</div>
+{% block admin_content %}{% endblock %}
+{% endblock %}

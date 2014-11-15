@@ -1,0 +1,118 @@
+{% extends "admin/base.html" %}
+{% from 'admin/report.html' import render_report %}
+{% block title %}Application from {{ application.character_name }} | {{ config.EVE.auth_name }}{% endblock %}
+{% block admin_content %}
+<div class="row">
+  <div class="col-md-12">
+    <h1>Application Details <small>{{ application.character_name }} applied to {{ application.corporation.name }}</small></h1>
+    <hr>
+    <div class="panel panel-turquoise">
+      <div class="panel-heading">
+        <h3 class="panel-title">Application Info</h3>
+      </div>
+      <div class="panel-body">
+        <div class="col-md-2">
+          <div class="thumbnail">
+            <img src="https://image.eveonline.com/Character/{{ application.character_id }}_256.jpg">
+              <img src="https://image.eveonline.com/Corporation/{{ application.current_corporation_id }}_32.png" class="pull-left">
+              {% if application.current_alliance_id -%}
+              <img src="https://image.eveonline.com/Alliance/{{ application.current_alliance_id }}_32.png" class="pull-right">
+              {%- endif %}
+            <div class="clearfix"></div>
+          </div>
+        </div>
+        <div class="col-md-10">
+          <dl class="dl-horizontal">
+            <dt>Character Name</dt>
+            <dd>{{ application.character_name }}</dd>
+            <dt>Corporation Name</dt>
+            <dd>{{ application.current_corporation_name }}</dd>
+            <dt>Alliance Name</dt>
+            <dd>{% if application.current_alliance_name %}{{ application.current_alliance_name }}{% else %}No alliance{% endif %}</dd>
+            <dt>Applied</dt>
+            <dd>{{ application.created_at|format_datetime }}</dd>
+            <dt>Motivation</dt>
+            <dd>{{ application.motivation }}</dd>
+            <dt>Application Status</dt>
+            <dd>{{ application.status }}</dd>
+            {% if application.handled_by %}
+            <dt>Handled By</dt>
+            <dd>{{ application.handled_by.name }}</dd>
+            <dt>Handled On</dt>
+            <dd>{{ application.handled_on|format_datetime }}</dd>
+            {% endif %}
+          </dl>
+        </div>
+        <div class="col-md-12">
+          <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+              <a href="{{ url_for('.AdminView:accept', application_id=application.id) }}" class="btn btn-success">Accept</a>
+            </div>
+            <div class="btn-group">
+              <a href="{{ url_for('.AdminView:reject', application_id=application.id) }}" class="btn btn-danger">Reject</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel {% if report %}panel-turquoise{% else %}panel-danger{% endif %}">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <a {% if report %}class="collapsed"{% endif %} data-toggle="collapse" href="#report">Report</a>
+        </h3>
+      </div>
+      <div class="panel-body">
+        <div class="col-md-12">
+          <div class="btn-group btn-group-justified">
+            <a href="{{ url_for('.AdminView:generate_application_report', application_id=application.id) }}" class="btn btn-success">{% if report %}Regenerate{% else %}Generate report{% endif %}</a>
+            {% if report %}
+            <div class="btn-group" data-toggle="buttons-checkbox">
+              <button type="button" data-toggle="collapse" data-target="#report" class="btn btn-primary">View Report</button>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% if report %}
+        <div class="col-md-12 collapse" id="report">
+          {{ render_report(report) }}
+        </div>
+        {% else %}
+        <div class="col-md-12">
+          No report exists yet.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="panel panel-warning">
+      <div class="panel-heading">
+        <h3 class="panel-title">Notes</h3>
+      </div>
+      <div class="panel-body">
+        {% if application.notes %}
+        <div class="list-group">
+          {% for note in application.notes %}
+          <div class="list-group-item">
+            {% if note.created_by == current_user or current_user.is_admin() %}
+            <a class="pull-right" href="{{ url_for('.AdminView:delete_note', application_id=application.id, note_id=note.id) }}"><span class="fa fa-close"></span></a>
+            {% endif %}
+            <p class="list-group-text">{{ note.text }}</p>
+            <small>By <strong>{{ note.created_by.name }}</strong> {{ note.created_at|humanize }}</small>
+          </div>
+          {% endfor %}
+        </div>
+        <hr>
+        {% endif %}
+        <form method="post" action="{{ url_for('.AdminView:add_note', application_id=application.id) }}">
+          {{ note_form.csrf_token }}
+          <div class="form-group">
+            <textarea class="form-control" name="text" placeholder="New note.."></textarea>
+          </div>
+          <div class="form-group">
+            <button type="submit" class="btn btn-success">Add note</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

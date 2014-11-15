@@ -1,0 +1,7 @@
+.tab-pane { border:1px solid #ddd; border-top:none; padding:.5em; }
+.dl { margin-bottom:0; }
+table.tablesorter { margin-top:0; font:inherit; }
+.label-standing { display:block; }
+.pagination { margin: 0; }
+.tablesorter-pager .pagination, .tablesorter-pager .page-display, .tablesorter-pager select { margin-right:.5em; display:inline; width:auto; }
+

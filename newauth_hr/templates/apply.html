@@ -1,0 +1,109 @@
+{% extends "_layouts/base.html" %}
+{% block title %}Apply | {{ config.EVE.auth_name }}{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-10 col-md-offset-1">
+    <h1>Apply to {{ config.EVE.auth_name }}</h1>
+    <hr>
+    <form action="" method="POST" role="form">
+      <div class="panel panel-turquoise">
+        <div class="panel-heading">
+          <h3 class="panel-title">Choose a character</h3>
+        </div>
+        <div class="panel-body">
+          {% if application_form.character.errors %}
+          <ul class="text-danger">
+            {% for error in application_form.character.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <div class="btn-group col-sm-12" data-toggle="buttons">
+            {% for character in characters %}
+            <label class="btn btn-default col-sm-4{% if application_form.character.data == character.characterID %} active{% endif %}">
+              <input type="radio" name="{{ application_form.character.name }}" value="{{ character.characterID }}"{% if application_form.character.data == character.characterID %} checked{% endif %}>
+              <div class="thumbnail">
+                <img src="https://image.eveonline.com/Character/{{ character.characterID }}_512.jpg">
+                <div class="caption">
+                  <h4>{{ character.characterName }}</h4>
+                  <dl>
+                    <dt>Corporation</dt>
+                    <dd>{{ character.corporationName }}</dd>
+                    <dt>Alliance</dt>
+                    {% if character.allianceName %}
+                    <dd>{{ character.allianceName }}</dd>
+                    {% else %}
+                    <dd>No alliance</dd>
+                    {% endif %}
+                  </dl>
+                </div>
+              </div>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-turquoise">
+        <div class="panel-heading">
+          <h3 class="panel-title">Choose a corporation</h3>
+        </div>
+        <div class="panel-body">
+          {% if application_form.corporation.errors %}
+          <ul class="text-danger">
+            {% for error in application_form.corporation.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <div class="btn-group col-sm-12" data-toggle="buttons">
+            {% for corp in corporations %}
+            <label class="btn btn-default col-sm-2{% if application_form.corporation.data == corp.id %} active{% endif %}">
+              <input type="radio" name="{{ application_form.corporation.name }}" value="{{ corp.id }}"{% if application_form.corporation.data == corp.id %} checked{% endif %}>
+              <div class="thumbnail">
+                <img src="https://image.eveonline.com/Corporation/{{ corp.id }}_256.png">
+                <div class="caption">
+                  <h5>{{ corp.name }}</h5>
+                </div>
+              </div>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-turquoise">
+        <div class="panel-heading">
+          <h3 class="panel-title">About yourself</h3>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            {{ application_form.email.label }}
+            <p>Make sure this email is valid as we will need it to contact you when your application is reviewed.</p>
+            {{ application_form.email(class_="form-control") }}
+            {% if application_form.email.errors %}
+            <ul class='text-danger'>
+              {% for error in application_form.email.errors %}
+              <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ application_form.motivation.label }}
+            <p>Please write below why you wish to join us, who do you know, who could recommend you, etc...</p>
+            {{ application_form.motivation(class_="form-control", rows=5) }}
+            {% if application_form.motivation.errors %}
+            <ul class='text-danger'>
+              {% for error in application_form.motivation.errors %}
+              <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {{ application_form.csrf_token }}
+      <button type="submit" class="btn btn-success btn-block">Apply!</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

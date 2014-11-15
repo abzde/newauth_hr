@@ -1,0 +1,44 @@
+{% extends "admin/base.html" %}
+{% block title %}Users | {{ config.EVE.auth_name }}{% endblock %}
+{% block admin_content %}
+<div class="row">
+  <div class="col-md-12">
+    <h1>Users</h1>
+    <hr>
+  </div>
+  <div class="col-md-12">
+    <table class="tablesorter" id="users">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Name</th>
+          <th>Corporation</th>
+          <th>Alliance</th>
+          <th>Status</th>
+          <th class="sorter-false filter-false"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.user_id }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.main_character.corporation_name }}</td>
+          <td>{{ user.main_character.alliance_name }}</td>
+          <td>{{ user.get_status().value }}</td>
+          <td class="text-right"><a class="btn btn-primary btn-xs" href="{{ url_for('.AdminView:view_user', user_id=user.user_id) }}">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  $(document).ready(function() {
+    $("#users").tablesorter({
+      headers: { 3: { sorter: 'timestamp' } }
+    });
+  });
+</script>
+{% endblock %}
+

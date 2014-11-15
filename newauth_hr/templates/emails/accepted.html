@@ -1,0 +1,9 @@
+<html>
+  <body>
+    <p>
+      Hi {{ application.character_name }}, your application to {{ application.corporation.name }} has been accepted!
+    </p>
+    <p>Our HR department has accepted your application and you can now apply in-game.</p>
+    <p>Once accepted in game please register with our services <a href="{{ url_for('RegisterView:api', type='internal', _external=True) }}">here</a>.</p>
+  </body>
+</html>
