@@ -107,7 +107,7 @@ class AdminView(FlaskView):
 
         application.status = ApplicationStatus.accepted.value
         application.handled_by = current_user
-        application.handled_on = db.func.now()
+        application.handled_at = db.func.now()
         db.session.commit()
 
         flash('{} accepted to {}'.format(application.character_name,
@@ -141,7 +141,7 @@ class AdminView(FlaskView):
 
         application.status = ApplicationStatus.rejected.value
         application.handled_by = current_user
-        application.handled_on = db.func.now()
+        application.handled_at = db.func.now()
         db.session.commit()
 
         flash('{} rejected from {}'.format(application.character_name,
